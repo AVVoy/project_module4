@@ -18,8 +18,7 @@ public class UserService {
 
     public void saveUser(Credential credential) {
         String hashPassword = getHashPassword(credential.getPassword());
-        userDAO.save(User.builder()
-                .id(UUID.randomUUID())
+        userDAO.create(User.builder()
                 .login(credential.getLogin())
                 .password(hashPassword)
                 .build()
@@ -37,6 +36,10 @@ public class UserService {
                 .filter(user -> passwordEncoder.matches(credential.getPassword(), user.getPassword()))
                 .findFirst();
         return registeredUser;
+    }
+
+    public User findById(UUID id) {
+        return userDAO.findById(id);
     }
 
     public String getHashPassword(String password) {

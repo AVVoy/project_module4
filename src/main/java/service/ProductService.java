@@ -12,7 +12,7 @@ public class ProductService {
     private final ProductDAO productDao;
 
     public void createProduct(Product product) {
-        productDao.save(product);
+        productDao.create(product);
     }
 
     public List<Product> getAllProducts(){
@@ -20,6 +20,6 @@ public class ProductService {
     }
 
     public void deleteProductById(UUID productId) {
-        productDao.delete(productId);
+        productDao.deleteById(productId);
     }
 }

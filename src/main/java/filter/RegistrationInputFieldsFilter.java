@@ -3,11 +3,13 @@ package filter;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
+import service.RegistrationInputFieldService;
 import service.validation.ValidationExecutor;
 import servlet.auth.helper.CredentialsExtractor;
 import servlet.auth.helper.dto.Credential;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -15,11 +17,14 @@ import java.util.Map;
 public class RegistrationInputFieldsFilter implements Filter {
 
     private ValidationExecutor validationExecutor;
+    private RegistrationInputFieldService registrationInputFieldService;
 
     @Override
     public void init(FilterConfig filterConfig) {
         validationExecutor =
                 (ValidationExecutor) filterConfig.getServletContext().getAttribute("validationExecutor");
+        registrationInputFieldService =
+                (RegistrationInputFieldService) filterConfig.getServletContext().getAttribute("registrationInputFieldService");
     }
 
     @Override
@@ -30,7 +35,8 @@ public class RegistrationInputFieldsFilter implements Filter {
             Credential credential = CredentialsExtractor.extract(req);
             Map<String, List<String>> stringListMap = validationExecutor.executeValidation(credential);
 
-            if (stringListMap.values().isEmpty()) {
+
+            if (registrationInputFieldService.isEmptyErrorMessage(stringListMap)) {
                 filterChain.doFilter(servletRequest, servletResponse);
             } else {
                 for(var validationErrorMessages:stringListMap.entrySet()) {

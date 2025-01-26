@@ -31,5 +31,8 @@
 
     <input type="submit" value="<fmt:message key="input.login"/>">
 </form>
+<form action="/registration" method="get">
+    <input type="submit" value="<fmt:message key="registration.go"/>">
+</form>
 </body>
 </html>

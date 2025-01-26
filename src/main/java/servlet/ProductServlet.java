@@ -1,6 +1,7 @@
 package servlet;
 
 import entity.Product;
+import entity.User;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
@@ -10,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import service.ProductService;
+import service.UserService;
 
 import java.io.IOException;
 import java.util.List;
@@ -19,6 +21,7 @@ import java.util.UUID;
 public class ProductServlet extends HttpServlet {
 
     private ProductService productService;
+    private UserService userService;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -26,6 +29,7 @@ public class ProductServlet extends HttpServlet {
         ServletContext servletContext = getServletContext();
 
         productService = (ProductService) servletContext.getAttribute("productService");
+        userService = (UserService) servletContext.getAttribute("userService");
 
     }
 
@@ -35,7 +39,7 @@ public class ProductServlet extends HttpServlet {
         HttpSession session = req.getSession();
         UUID userId = (UUID) session.getAttribute("userId");
         List<Product> userProducts = products.stream()
-                .filter(product -> product.getUserId().equals(userId))
+                .filter(product -> product.getUser().getId().equals(userId))
                 .toList();
 
         req.setAttribute("products", userProducts);
@@ -49,12 +53,12 @@ public class ProductServlet extends HttpServlet {
         String imageUrl = req.getParameter("imageUrl");
 
         HttpSession session = req.getSession();
+        User user = userService.findById((UUID) session.getAttribute("userId"));
 
         productService.createProduct(Product.builder()
-                .id(UUID.randomUUID())
                 .name(name)
                 .imageUrl(imageUrl)
-                .userId((UUID) session.getAttribute("userId"))
+                .user(user)
                 .build()
         );
 
